@@ -22,7 +22,36 @@ class Teststore(unittest.TestCase):
         with self.assertRaises(se):
             self.store.add_product("New Product")
 
-    # def test_remove_produck
+    def test_total_quantity_in_stock(self):
+        """Product 1: 50
+           Product 2: 100
+           Total   :  150"""
+        self.assertEqual(self.store.get_total_quantity(), 150)
+
+    def test_active_products(self):
+        """User can not deactivate Product unless it run out"""
+        buy_whole = self.product1.buy(50)
+        self.assertEqual(buy_whole, 500)
+        # Product1 quantity 0 then:
+        active_products = len(self.store.get_all_products())
+        self.assertEqual(active_products, 1)
+
+    def test_get_all_products(self):
+        """setUp added only 2 Products"""
+        self.assertEqual(len(self.store.get_all_products()), 2)
+
+    def test_remove_product(self):
+        """Testing remove_methods"""
+        # Removing Invalid object raises exception
+        with self.assertRaises(se):
+            self.store.remove_product("None Product Type any object")
+        # Product is not in list
+            self.store.remove_product(Product("Product4", 100, 100))
+        # Attempt remove from empty stock raises exception
+        self.store.remove_product(self.product1)
+        self.store.remove_product(self.product2)
+        with self.assertRaises(se):
+            self.store.remove_product(self.product1)
 
 
 if __name__ == "__main__":

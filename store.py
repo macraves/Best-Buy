@@ -17,6 +17,8 @@ class Store:
 
     def add_product(self, product: object):
         """Adding Product class instance to stock list"""
+        if not isinstance(product, products.Product):
+            raise StoreExceptions("Requested product type is not valid")
         self.stock.append(product)
 
     def remove_product(self, product):
