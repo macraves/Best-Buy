@@ -185,9 +185,10 @@ class LimitedProducts(Product):
         """Checks instance purchase count by its own allowed count
         if purchase get greater value than instance attribute it prints message
         and it will not execute last order but it returns 0"""
-        if self.allowed_purchase_count == self.purchased_number:
-            print(
-                f"{self.name} product cannot be ordered more than {self.allowed_purchase_count}")
-            return 0
-        self.purchased_number += 1
-        return super().buy(quantity)
+        if Product.validate_buyer_quantity(quantity):
+            if self.allowed_purchase_count == self.purchased_number:
+                print(
+                    f"{self.name} product, cannot be ordered more than {self.allowed_purchase_count}")
+                return 0
+            self.purchased_number += 1
+            return super().buy(quantity)
