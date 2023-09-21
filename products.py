@@ -32,7 +32,7 @@ class Product:
         """Ignore invalid name entry and capitilaze string"""
         if not isinstance(entered_name, str):
             raise ClassMethodException("Please enter text")
-        self._name = entered_name.lower().title()
+        self._name = entered_name.lower().title().strip()
 
     @property
     def quantity(self) -> float:
