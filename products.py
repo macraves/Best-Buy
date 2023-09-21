@@ -1,4 +1,4 @@
-"""Product properties and behaviours"""
+"""Product properties and behaivours"""
 
 
 class ClassMethodException(Exception):
@@ -112,6 +112,32 @@ def test_product_class():
 
     bose.set_quantity(1000)
     print(bose)
+
+
+class QuantitativelessProducts(Product):
+    """Only share name and price attributes
+       Always need to be set on 1 in his definition
+       Attempt to get setted should raise exception, override to super buy
+       Buy methods only accept 1 as quantity
+       Products alwasy active"""
+
+    def __init__(self, name: str, price: float) -> None:
+        super().__init__(name, price, quantity=1)
+
+    # Overriding some super class spesific methods according
+    # quantitive less producs behaivours
+    def set_quantity(self, quantity) -> None:
+        if isinstance(quantity, int):
+            raise ClassMethodException(
+                f"{self.name}, This Product Quantity cannot be setted")
+
+    def buy(self, quantity) -> float:
+        if isinstance(quantity, int):
+            raise ClassMethodException(
+                f"Invalid buy attemt for this product {self.name}")
+
+    def is_active(self) -> bool:
+        return True
 
 
 if __name__ == "__main__":
