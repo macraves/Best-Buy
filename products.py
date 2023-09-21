@@ -87,12 +87,12 @@ class Product:
         Returns the total price (float) of the purchase.
         Updates the quantity of the product.
         Invalid entry raises an Exception"""
-        if quantity > self.quantity:
-            raise ClassMethodException(
-                f"Quantity larger than what exists\nAvailable amount is {self.quantity}")
         if not Product.validate_buyer_quantity(quantity):
             raise ClassMethodException(
                 f"Invalid Buyer request\nMaximum Customer Request: {Product._max_customer_request}")
+        if quantity > self.quantity:
+            raise ClassMethodException(
+                f"Quantity larger than what exists\nAvailable amount is {self.quantity}")
         total_price = self.price * quantity
         self.quantity -= quantity
         if self.quantity == 0:
@@ -109,7 +109,7 @@ class QuantitativelessProducts(Product):
             **instance attribute active cannot be manupilated for that
                 getter and setter method override super active attribute
             **deactivation of instance attribute active calls the exception
-            ** Attempt to set quantity any other number than 1 prevented"""
+            ** Attempt to set quantity any other number other than 1 prevented"""
 
     def __init__(self, name: str, price: float) -> None:
         super().__init__(name, price, quantity=1)
@@ -158,10 +158,36 @@ class QuantitativelessProducts(Product):
 
 
 class LimitedProducts(Product):
-    """Limited products must have exclusive shipping info
-    Atttemp to order more than shipping count must get under control
-    parent class buy methods"""
+    """Limited products must have exclusively purchase info
+    Atttemp to order more than purchase count must get under control
+    child class buy methods"""
 
     def __init__(self, name: str, price: float, quantity: int, count) -> None:
         super().__init__(name, price, quantity)
-        self.available_purchase_count = count
+        # Use a different name for the instance variable
+        self._allowed_purchase_count = count
+        self.purchased_number = 0
+
+    @property
+    def allowed_purchase_count(self):
+        """Getter Method"""
+        return self._allowed_purchase_count
+
+    @allowed_purchase_count.setter
+    def allowed_purchase_count(self, quantity):
+        if not isinstance(quantity, int):
+            raise ClassMethodException("Invalid purchase quantity")
+        if quantity > self.quantity:
+            raise ClassMethodException("There is not enough quantity")
+        self._allowed_purchase_count = quantity
+
+    def buy(self, quantity):
+        """Checks instance purchase count by its own allowed count
+        if purchase get greater value than instance attribute it prints message
+        and it will not execute last order but it returns 0"""
+        if self.allowed_purchase_count == self.purchased_number:
+            print(
+                f"{self.name} product cannot be ordered more than {self.allowed_purchase_count}")
+            return 0
+        self.purchased_number += 1
+        return super().buy(quantity)
