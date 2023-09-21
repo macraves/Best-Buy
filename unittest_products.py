@@ -5,7 +5,8 @@ Test that product purchase modifies the quantity and returns the right output.
 Test that buying a larger quantity than exists invokes exception"""
 
 import unittest
-from products import Product, QuantitativelessProducts as QP, ClassMethodException as clsex
+from products import Product, QuantitativelessProducts as QP, \
+    LimitedProducts as LP, ClassMethodException as clsex
 
 
 class TestProducts(unittest.TestCase):
@@ -14,6 +15,7 @@ class TestProducts(unittest.TestCase):
     def setUp(self) -> None:
         self.product1 = Product("test string", 10.0, 100)
         self.product2 = QP("  windows licence  ", price=100)
+        self.product3 = LP(" limited product ", 10, 10, 2)
 
     def validate_names(self):
         """Test that creating a product with 
@@ -88,6 +90,33 @@ class TestProducts(unittest.TestCase):
         with self.assertRaises(clsex):
             self.product2.active = False
             self.product2.deactivate()
+    # TEST FOR LimitedProduct as LP product3
+
+    def test_LP_name(self):
+        """Test the product name"""
+        # self.product3 = LP(" limited product ", 10, 10, 2)
+        self.assertTrue(self.product3.name, "Limited Product")
+
+    def test_lp_allowed_number_methods(self):
+        """Test the allowed purchase count getter and setter"""
+        self.assertEqual(self.product3.allowed_purchase_count, 2)
+        # Raise Exception situations:
+        with self.assertRaises(clsex):
+            self.product3.allowed_purchase_count = None
+            self.product3.allowed_purchase_count = ""
+
+    def test_lp_buy_methods(self):
+        """Test LP buy method"""
+        test_product = LP("allowed purchased is 2", 10, 10, 2)
+        with self.assertRaises(clsex):
+            # test if buy arguments is none integer
+            self.product3.buy("")
+        # Test if test_product can be executed 3 times
+        total_amount = test_product.buy(1)
+        total_amount += test_product.buy(1)
+        total_amount += test_product.buy(1)
+
+        self.assertTrue(total_amount, 20)
 
 
 if __name__ == "__main__":
