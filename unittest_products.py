@@ -5,7 +5,7 @@ Test that product purchase modifies the quantity and returns the right output.
 Test that buying a larger quantity than exists invokes exception"""
 
 import unittest
-from products import Product, ClassMethodException as clsex
+from products import Product, QuantitativelessProducts as QP, ClassMethodException as clsex
 
 
 class TestProducts(unittest.TestCase):
@@ -13,6 +13,7 @@ class TestProducts(unittest.TestCase):
 
     def setUp(self) -> None:
         self.product1 = Product("test string", 10.0, 100)
+        self.product2 = QP("  windows licence  ", price=100)
 
     def validate_names(self):
         """Test that creating a product with 
@@ -58,6 +59,32 @@ class TestProducts(unittest.TestCase):
         with self.assertRaises(clsex):
             self.product1.set_quantity(1000)
             self.product1.set_quantity(0)
+
+    # Test for QuantitivelessProducts
+    def test_QP_name(self):
+        """Test to initiate"""
+        self.assertEqual(self.product2.name, "Windows Licence")
+
+    def test_QP_set_quantity(self):
+        """Attemt to set quantity or
+        none integer values raises exception"""
+        with self.assertRaises(clsex):
+            self.product2.set_quantity(1)
+            self.product2.set_quantity("None")
+
+    def test_QP_buy_method(self):
+        """More than 1 to buy raises exeption"""
+        with self.assertRaises(clsex):
+            self.product2.buy(1)
+            self.product2.buy("None")
+
+    def test_QP_always_Active(self):
+        """Prevent Any attemt to change active to not active preventation"""
+        self.assertTrue(self.product2.is_active())
+        # QP products can not be set as False
+        # self.assertFalse(self.product2.deactivate())
+        with self.assertRaises(clsex):
+            self.product2.active = False
 
 
 if __name__ == "__main__":

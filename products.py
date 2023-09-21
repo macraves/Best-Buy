@@ -118,12 +118,26 @@ class QuantitativelessProducts(Product):
                 f"{self.name}, This Product Quantity cannot be setted")
 
     def buy(self, quantity) -> float:
-        if isinstance(quantity, int):
-            raise ClassMethodException(
-                f"Invalid buy attemt for this product {self.name}")
+        """Buying more than 1 raises exception"""
         if quantity != 1:
             raise ClassMethodException(
                 f"{self.name} Attempt to any number rather than 1")
+        return super().buy(1)
+    # Overide instance attribute "active"
+
+    @property
+    def active(self) -> bool:
+        """Always considered return True"""
+        return True
+
+    @active.setter
+    def active(self, value):
+        if not value:
+            raise ClassMethodException(f"{self.name} cannot be deactivated")
+
+    def deactivate(self):
+        raise ClassMethodException(f"{self.name} cannot be ")
 
     def is_active(self) -> bool:
+        """It returns always True for Quantitave less"""
         return True
