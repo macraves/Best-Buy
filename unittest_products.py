@@ -61,14 +61,17 @@ class TestProducts(unittest.TestCase):
             self.product1.set_quantity(0)
 
     # Test for QuantitivelessProducts
-    def test_QP_name(self):
+    def test_QP_name_and_quantity(self):
         """Test to initiate"""
         self.assertEqual(self.product2.name, "Windows Licence")
+        self.assertTrue(self.product2.quantity, 1)
 
     def test_QP_set_quantity(self):
         """Attemt to set quantity or
         none integer values raises exception"""
         with self.assertRaises(clsex):
+            self.product2.quantity = 2
+            self.assertFalse(self.product2.quantity, 2)
             self.product2.set_quantity(1)
             self.product2.set_quantity("None")
 
@@ -82,9 +85,9 @@ class TestProducts(unittest.TestCase):
         """Prevent Any attemt to change active to not active preventation"""
         self.assertTrue(self.product2.is_active())
         # QP products can not be set as False
-        # self.assertFalse(self.product2.deactivate())
         with self.assertRaises(clsex):
             self.product2.active = False
+            self.product2.deactivate()
 
 
 if __name__ == "__main__":

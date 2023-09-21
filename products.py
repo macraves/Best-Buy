@@ -102,16 +102,30 @@ class Product:
 
 class QuantitativelessProducts(Product):
     """Only share name and price attributes
-       Always need to be set on 1 in his definition
+       Quantity need to be set on 1 in his definition
        Attempt to get setted should raise exception, override to super buy
        Buy methods only accept 1 as quantity
-       Products alwasy active"""
+       Products alwasy active
+            **instance attribute active cannot be manupilated for that
+                getter and setter method override super active attribute
+            **deactivation of instance attribute active calls the exception
+            ** Attempt to set quantity any other number than 1 prevented"""
 
     def __init__(self, name: str, price: float) -> None:
         super().__init__(name, price, quantity=1)
 
     # Overriding some super class spesific methods according
     # quantitive less producs behaivours
+    @property
+    def quantity(self) -> float:
+        return 1
+
+    @quantity.setter
+    def quantity(self, value):
+        if value != 1:
+            raise ClassMethodException(
+                f"{self.name}`s quantity cannot be andy digit rather than 1 ")
+
     def set_quantity(self, quantity) -> None:
         if isinstance(quantity, int):
             raise ClassMethodException(
@@ -136,8 +150,18 @@ class QuantitativelessProducts(Product):
             raise ClassMethodException(f"{self.name} cannot be deactivated")
 
     def deactivate(self):
-        raise ClassMethodException(f"{self.name} cannot be ")
+        raise ClassMethodException(f"{self.name} cannot be deactivated ")
 
     def is_active(self) -> bool:
         """It returns always True for Quantitave less"""
         return True
+
+
+class LimitedProducts(Product):
+    """Limited products must have exclusive shipping info
+    Atttemp to order more than shipping count must get under control
+    parent class buy methods"""
+
+    def __init__(self, name: str, price: float, quantity: int, count) -> None:
+        super().__init__(name, price, quantity)
+        self.available_purchase_count = count
