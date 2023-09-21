@@ -78,6 +78,8 @@ class Product:
     @classmethod
     def validate_buyer_quantity(cls, buyer_request: int) -> bool:
         """Validates buyer request quantity"""
+        if not isinstance(buyer_request, int):
+            raise ClassMethodException("Buying quantity must be integer")
         return 0 <= buyer_request <= cls._max_customer_request
 
     def buy(self, quantity) -> float:
@@ -96,22 +98,6 @@ class Product:
         if self.quantity == 0:
             Product.deactivate(self)
         return total_price
-
-
-def test_product_class():
-    """Test of product class"""
-    bose = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
-    mac = Product("MacBook Air M2", price=1450, quantity=100)
-
-    print(bose.buy(50))
-    print(mac.buy(100))
-    print(mac.is_active())
-
-    print(bose)
-    print(mac)
-
-    bose.set_quantity(1000)
-    print(bose)
 
 
 class QuantitativelessProducts(Product):
@@ -135,10 +121,9 @@ class QuantitativelessProducts(Product):
         if isinstance(quantity, int):
             raise ClassMethodException(
                 f"Invalid buy attemt for this product {self.name}")
+        if quantity != 1:
+            raise ClassMethodException(
+                f"{self.name} Attempt to any number rather than 1")
 
     def is_active(self) -> bool:
         return True
-
-
-if __name__ == "__main__":
-    test_product_class()
