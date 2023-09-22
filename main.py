@@ -2,7 +2,7 @@
 import store
 import products
 import ioput as io
-from products_promotion import PercentageDiscount
+from functions import *
 
 
 def default_inventory() -> object:
@@ -21,42 +21,14 @@ def default_inventory() -> object:
     return test_store
 
 
-INNER_MENU_VIEW = """{line}
-{func}
-{items}
-{line}\n"""
+INNER_MENU_VIEW = get_menu()
 
 
 TEST_STORE = default_inventory()
 
 
-def promotion_options(product: object) -> object:  # Promotion object
-    """It gets product.Product type instance"""
-    promotion_dict = {
-        1: PercentageDiscount
-    }
-    number_pro = io.read_int("Enter the promotion no: ")
-    if number_pro in promotion_dict:
-        ratio = io.read_float("Discount percentange: ")
-        # Assigns only product instance price and quantity attributes to
-        # one of the product_promotion classes, avoid to change product properties
-        return promotion_dict[number_pro](product.price, product.quantity, ratio)
-
-
-def add_promotion(shop: object):
-    """Opens up menu to display product list of store
-    User enters product no to add promotion to Product
-    Chosen Product.promotion attributes invokes and  get assigen
-    with Promotion instance"""
-    add_menu = INNER_MENU_VIEW.format(
-        line="-"*6, func="LIST OF SHOP PRODUCTS", items=shop)
-    product_no = io.read_int_ranged(
-        f"{add_menu}\nProvide product no: ", min_value=1, max_value=len(shop.stock))
-    # product assigned products.Product object
-    product = shop.stock[product_no-1]
-    product.promotion = promotion_options(product)
-    print(product.promotion.apply_promotion())
-
+# PROMOTIONS
+# ARE USED TO BE HERE
 
 def list_store_products(stored: object) -> None:
     """Use Store object __str__ method"""
