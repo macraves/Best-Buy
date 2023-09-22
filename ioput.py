@@ -30,6 +30,11 @@ def read_number(prompt, function):
     '''Display a prompt and read int or floating point number
     Keyboard Interrupts are ignored
     Invalid numbers are rejected and only returns a number containing the value input by user'''
+    message = ["Please enter a integer number", "Please enter a float number"]
+    if isinstance(function, int):
+        warning = message[0]
+    if isinstance(function, float):
+        warning = message[1]
     while True:
         try:
             number_text = read_text(prompt)
@@ -37,7 +42,7 @@ def read_number(prompt, function):
             result = function(number_text)
             return result
         except ValueError:
-            print('Please enter a number')
+            print(warning)
 
 
 def read_number_ranged(prompt, function, min_value, max_value):
