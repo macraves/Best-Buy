@@ -21,18 +21,16 @@ class Store:
             raise StoreExceptions("Requested product type is not valid")
         self.stock.append(product)
 
-    def remove_product(self, product):
+    def remove_product(self, product: object) -> str:
         """Uses remove method of list to remove product from the list"""
-        if not isinstance(product, products.Product):
-            raise StoreExceptions("Requested product type is not valid")
-        search_format = product.name.lower().title()
-        if product not in self.stock:
-            raise StoreExceptions("Product not in the list")
         if len(self.stock) == 0:
             raise StoreExceptions("Stoke is empty")
-        for item in self.stock:
-            if item.name == search_format:
-                self.stock.remove(item)
+        if not isinstance(product, products.Product):
+            raise StoreExceptions("Requested product type is not valid")
+        if product not in self.stock:
+            raise StoreExceptions("Product not in the list")
+        self.stock.remove(product)
+        return "Product is removed"
 
     def get_total_quantity(self):
         "Returns how many items are in the store in total"
