@@ -1,4 +1,5 @@
 """Product properties and behaivours"""
+import products_promotion as pp
 
 
 class ClassMethodException(Exception):
@@ -17,6 +18,7 @@ class Product:
         self.name = name
         self.price = price
         self.quantity = quantity
+        self.promotion = {}
         if self.quantity == 0:
             self.active: bool = False
         else:
@@ -30,7 +32,7 @@ class Product:
     @name.setter
     def name(self, entered_name):
         """Ignore invalid name entry and capitilaze string"""
-        if not isinstance(entered_name, str):
+        if not isinstance(entered_name, str) or len(entered_name.strip()) == 0:
             raise ClassMethodException("Please enter text")
         self._name = entered_name.lower().title().strip()
 
@@ -75,6 +77,11 @@ class Product:
         template = f"{self.name}, Price: ${self.price}, Quantity: {self.quantity}"
         return template
 
+    def set_promotion(self, promotion):
+        """Product instance promotion attributes is assigned to 
+        the Promotion instance"""
+        self.promotion = promotion
+
     @classmethod
     def validate_buyer_quantity(cls, buyer_request: int) -> bool:
         """Validates buyer request quantity"""
@@ -93,6 +100,9 @@ class Product:
         if quantity > self.quantity:
             raise ClassMethodException(
                 f"Quantity larger than what exists\nAvailable amount is {self.quantity}")
+        if self.promotion:
+            # return total price
+            pass
         total_price = self.price * quantity
         self.quantity -= quantity
         if self.quantity == 0:
