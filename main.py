@@ -3,12 +3,6 @@ import store
 import products
 import ioput as io
 
-# Ctrl + Enter Run the cell but not advencing
-INNER_MENU_VIEW = """{line}
-{func}
-{items}
-{line}\n"""
-
 
 def default_inventory() -> object:
     """To Test default items would be added to the store"""
@@ -24,6 +18,15 @@ def default_inventory() -> object:
                              price=100, quantity=100)
     test_store.add_product(phone)
     return test_store
+
+
+INNER_MENU_VIEW = """{line}
+{func}
+{items}
+{line}\n"""
+
+
+TEST_STORE = default_inventory()
 
 
 def list_store_products(stored: object) -> None:
@@ -98,34 +101,61 @@ def make_an_order(stored) -> None:
             "Neither the Store object is empty, nor did the user enter appropriate data.")
 
 
-def add_product():
+def remove_product_in_stock(test_store: object) -> bool:
+    """stript and title string method is applied"""
+    while test_store.stock:
+        list_str = INNER_MENU_VIEW.format(
+            line="-"*6, func="REMOVE PRODUCT IN STORE", items=test_store)
+        product_no = io.read_int_ranged(
+            f"{list_str}\nProvide product no: ", min_value=1, max_value=len(test_store.stock))
+
+        try:
+            product = test_store.stock[product_no-1]
+            print(test_store.remove_product(product))
+        except store.StoreExceptions as sexc:
+            print(f"Error during the removal {sexc}")
+        if not io.ask_to_continue("Do you want to continue y/n? "):
+            break
+    print("\nLIST IS EMPTY")
+
+
+def add_new_product(test_store):
     """ADDING MENU"""
     adding_menu = '''
         1: "Product",
         2: "Products without quantity",
         3: "Limited Product"
     Please choice one of the options above: '''
-    adding_choice = io.read_int_ranged(adding_menu, min_value=1, max_value=3)
+    while True:
+        adding_choice = io.read_int_ranged(
+            adding_menu, min_value=1, max_value=3)
+        try:
+            if adding_choice == 1:
+                product_name = io.read_text("Provide product name: ")
+                product_price = io.read_float("Provide product price: ")
+                product_quantity = io.read_int("Provide product quantity: ")
+                new_product = products.Product(
+                    product_name, product_price, product_quantity)
+            elif adding_choice == 2:
+                product_name = io.read_text("Provide product name: ")
+                product_price = io.read_float("Provide product price: ")
+                new_product = products.QuantitativelessProducts(
+                    product_name, product_price)
+            elif adding_choice == 3:
+                product_name = io.read_text("Provide product name: ")
+                product_price = io.read_float("Provide product price: ")
+                product_quantity = io.read_int("Provide product quantity: ")
+                product_limitations = io.read_int(
+                    "Provide product limitations: ")
+                new_product = products.LimitedProducts(
+                    product_name, product_price, product_quantity, product_limitations)
+        except products.ClassMethodException as cme:
+            print(f"Adding failed: {cme}")
+        test_store.stock.append(new_product)
+        print("New product added to Store Stock")
 
-    if adding_choice == 1:
-        product_name = io.read_text("Provide product name: ")
-        product_price = io.read_float("Provide product price: ")
-        product_quantity = io.read_int("Provide product quantity: ")
-        new_product = products.Product(
-            product_name, product_price, product_quantity)
-    elif adding_choice == 2:
-        product_name = io.read_text("Provide product name: ")
-        product_price = io.read_float("Provide product price: ")
-        new_product = products.QuantitativelessProducts(
-            product_name, product_price)
-    elif adding_choice == 3:
-        product_name = io.read_text("Provide product name: ")
-        product_price = io.read_float("Provide product price: ")
-        product_quantity = io.read_int("Provide product quantity: ")
-        product_limitations = io.read_int("Provide product limitations: ")
 
-
-def opening_scene(TEST_STORE):
+def opening_scene(test_store):
     """Designs User Interface"""
     menu_title = "Store Menu"
     line = "-" * len(menu_title)
@@ -140,12 +170,12 @@ def opening_scene(TEST_STORE):
 7. Show product details
 8. Make an order
 9. Quit
-Please choose a number: """
+Please provide operation number: """
     functions = {
         1: list_store_products,
         2: total_amount_in_store,
-        3: "add_new_product",
-        4: "remove_product",
+        3: add_new_product,
+        4: remove_product_in_stock,
         5: "add_promotion",
         6: "remove_promotion",
         7: "show_product_details",
@@ -157,12 +187,11 @@ Please choose a number: """
         function = functions[menu_choice]
         if function == "quit":
             break
-        function(TEST_STORE)
+        function(test_store)
 
 
 def main():
     """Main Flow"""
-    TEST_STORE = default_inventory()
     opening_scene(TEST_STORE)
 
 
