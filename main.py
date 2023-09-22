@@ -10,7 +10,7 @@ INNER_MENU_VIEW = """{line}
 {line}\n"""
 
 
-def default_inventory() -> list:
+def default_inventory() -> object:
     """To Test default items would be added to the store"""
     items_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
                   products.Product("Bose QuietComfort Earbuds",
@@ -23,7 +23,7 @@ def default_inventory() -> list:
     phone = products.Product("samsung S10",
                              price=100, quantity=100)
     test_store.add_product(phone)
-    return items_list
+    return test_store
 
 
 def list_store_products(stored: object) -> None:
@@ -66,6 +66,9 @@ def make_an_order(stored) -> None:
     Matches index -1 from available products list"""
     products_cost = 0
     available_products = stored.get_all_products()  # list of object
+    if not available_products:
+        print("\nStoke is empty\n")
+        return ""
     available_products_string_list = [
         str(product) for product in stored.get_all_products()]
     # enumerate index starts from 1, real index is 0
@@ -95,36 +98,72 @@ def make_an_order(stored) -> None:
             "Neither the Store object is empty, nor did the user enter appropriate data.")
 
 
-def opening_scene():
+def add_product():
+    """ADDING MENU"""
+    adding_menu = '''
+        1: "Product",
+        2: "Products without quantity",
+        3: "Limited Product"
+    Please choice one of the options above: '''
+    adding_choice = io.read_int_ranged(adding_menu, min_value=1, max_value=3)
+
+    if adding_choice == 1:
+        product_name = io.read_text("Provide product name: ")
+        product_price = io.read_float("Provide product price: ")
+        product_quantity = io.read_int("Provide product quantity: ")
+        new_product = products.Product(
+            product_name, product_price, product_quantity)
+    elif adding_choice == 2:
+        product_name = io.read_text("Provide product name: ")
+        product_price = io.read_float("Provide product price: ")
+        new_product = products.QuantitativelessProducts(
+            product_name, product_price)
+    elif adding_choice == 3:
+        product_name = io.read_text("Provide product name: ")
+        product_price = io.read_float("Provide product price: ")
+        product_quantity = io.read_int("Provide product quantity: ")
+        product_limitations = io.read_int("Provide product limitations: ")
+
+
+def opening_scene(TEST_STORE):
     """Designs User Interface"""
-    test_list = default_inventory()
-    test_store = store.Store(test_list)
     menu_title = "Store Menu"
     line = "-" * len(menu_title)
     menu = f"""{menu_title}
 {line}
 1. List all products in store
 2. Show total amount in store
-3. Make an order
-4. Quit
+3. Add new product in store
+4. Remove a product in store
+5. Add promotion
+6. Remove promotion
+7. Show product details
+8. Make an order
+9. Quit
 Please choose a number: """
     functions = {
         1: list_store_products,
         2: total_amount_in_store,
-        3: make_an_order,
-        4: "quit"
+        3: "add_new_product",
+        4: "remove_product",
+        5: "add_promotion",
+        6: "remove_promotion",
+        7: "show_product_details",
+        8: make_an_order,
+        9: "quit"
     }
     while True:
-        menu_choice = io.read_int_ranged(menu, min_value=1, max_value=4)
+        menu_choice = io.read_int_ranged(menu, min_value=1, max_value=9)
         function = functions[menu_choice]
         if function == "quit":
             break
-        function(test_store)
+        function(TEST_STORE)
 
 
 def main():
     """Main Flow"""
-    opening_scene()
+    TEST_STORE = default_inventory()
+    opening_scene(TEST_STORE)
 
 
 if __name__ == "__main__":
