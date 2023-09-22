@@ -30,14 +30,17 @@ INNER_MENU_VIEW = """{line}
 TEST_STORE = default_inventory()
 
 
-def promotion_options(product) -> object:  # Promotion object
-    """List of promotion to chose"""
+def promotion_options(product: object) -> object:  # Promotion object
+    """It gets product.Product type instance"""
     promotion_dict = {
         1: PercentageDiscount
     }
     number_pro = io.read_int("Enter the promotion no: ")
     if number_pro in promotion_dict:
-        return promotion_dict[number_pro](product.price, product.quantity)
+        ratio = io.read_float("Discount percentange: ")
+        # Assigns only product instance price and quantity attributes to
+        # one of the product_promotion classes, avoid to change product properties
+        return promotion_dict[number_pro](product.price, product.quantity, ratio)
 
 
 def add_promotion(shop: object):
@@ -49,6 +52,7 @@ def add_promotion(shop: object):
         line="-"*6, func="LIST OF SHOP PRODUCTS", items=shop)
     product_no = io.read_int_ranged(
         f"{add_menu}\nProvide product no: ", min_value=1, max_value=len(shop.stock))
+    # product assigned products.Product object
     product = shop.stock[product_no-1]
     product.promotion = promotion_options(product)
     print(product.promotion.apply_promotion())
@@ -64,7 +68,8 @@ def list_store_products(stored: object) -> None:
 def total_amount_in_store(stored: object) -> None:
     """Total quantities of all products"""
     total_amount = sum(item.quantity for item in stored.stock)
-    print(f"Total of {total_amount} items in store")
+    total_view = f"{'-'*6}\nTOTAL AMOUNT OF PRODUCTS: {total_amount}\n{'-'*6}"
+    print(total_view)
 
 
 def validate_user_answer():
@@ -146,11 +151,11 @@ def remove_product_in_stock(test_store: object) -> bool:
 
 def add_new_product(test_store):
     """ADDING MENU"""
-    adding_menu = '''
-        1: "Product",
-        2: "Products without quantity",
-        3: "Limited Product"
-    Please choice one of the options above: '''
+    adding_menu = """
+    1: "Product",
+    2: "Products without quantity",
+    3: "Limited Product"
+Please choice one of the options above: """
     while True:
         adding_choice = io.read_int_ranged(
             adding_menu, min_value=1, max_value=3)
@@ -175,9 +180,12 @@ def add_new_product(test_store):
                 new_product = products.LimitedProducts(
                     product_name, product_price, product_quantity, product_limitations)
         except products.ClassMethodException as cme:
-            print(f"Adding failed: {cme}")
+            print(f"Adding failed: {cme}\nPlease try again")
+            continue
         test_store.stock.append(new_product)
         print("New product added to Store Stock")
+        if not io.ask_to_continue("Do you want o add onother product: "):
+            break
 
 
 def opening_scene(test_store):
