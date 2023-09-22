@@ -1,5 +1,4 @@
 """Product properties and behaivours"""
-import products_promotion as pp
 
 
 class ClassMethodException(Exception):
@@ -18,7 +17,7 @@ class Product:
         self.name = name
         self.price = price
         self.quantity = quantity
-        self.promotion = {}
+        self.promotion = None
         if self.quantity == 0:
             self.active: bool = False
         else:
@@ -101,8 +100,10 @@ class Product:
             raise ClassMethodException(
                 f"Quantity larger than what exists\nAvailable amount is {self.quantity}")
         if self.promotion:
-            # return total price
-            pass
+            # Promotion object method return the result
+            total_price = self.promotion.apply_promotion(quantity)
+            return total_price
+
         total_price = self.price * quantity
         self.quantity -= quantity
         if self.quantity == 0:
