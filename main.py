@@ -2,6 +2,7 @@
 import store
 import products
 import ioput as io
+from products_promotion import PercentageDiscount
 
 
 def default_inventory() -> object:
@@ -27,6 +28,30 @@ INNER_MENU_VIEW = """{line}
 
 
 TEST_STORE = default_inventory()
+
+
+def promotion_options(product) -> object:  # Promotion object
+    """List of promotion to chose"""
+    promotion_dict = {
+        1: PercentageDiscount
+    }
+    number_pro = io.read_int("Enter the promotion no: ")
+    if number_pro in promotion_dict:
+        return promotion_dict[number_pro](product.price, product.quantity)
+
+
+def add_promotion(shop: object):
+    """Opens up menu to display product list of store
+    User enters product no to add promotion to Product
+    Chosen Product.promotion attributes invokes and  get assigen
+    with Promotion instance"""
+    add_menu = INNER_MENU_VIEW.format(
+        line="-"*6, func="LIST OF SHOP PRODUCTS", items=shop)
+    product_no = io.read_int_ranged(
+        f"{add_menu}\nProvide product no: ", min_value=1, max_value=len(shop.stock))
+    product = shop.stock[product_no-1]
+    product.promotion = promotion_options(product)
+    print(product.promotion.apply_promotion())
 
 
 def list_store_products(stored: object) -> None:
@@ -102,7 +127,7 @@ def make_an_order(stored) -> None:
 
 
 def remove_product_in_stock(test_store: object) -> bool:
-    """stript and title string method is applied"""
+    """Usage of Store.remove_product method"""
     while test_store.stock:
         list_str = INNER_MENU_VIEW.format(
             line="-"*6, func="REMOVE PRODUCT IN STORE", items=test_store)
@@ -176,7 +201,7 @@ Please provide operation number: """
         2: total_amount_in_store,
         3: add_new_product,
         4: remove_product_in_stock,
-        5: "add_promotion",
+        5: add_promotion,
         6: "remove_promotion",
         7: "show_product_details",
         8: make_an_order,
