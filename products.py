@@ -101,9 +101,9 @@ class Product:
                 f"Quantity larger than what exists\nAvailable amount is {self.quantity}")
         if self.promotion:
             # Promotion object method return the result
-            total_price = self.promotion.apply_promotion(quantity)
+            total_price = self.promotion.apply_promotion(self.price, quantity)
+            self.quantity -= quantity
             return total_price
-
         total_price = self.price * quantity
         self.quantity -= quantity
         if self.quantity == 0:

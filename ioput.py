@@ -35,6 +35,8 @@ def read_number(prompt, function):
         warning = message[0]
     if isinstance(function, float):
         warning = message[1]
+    else:
+        warning = "!!!!INVALID ENTRY!!!!"
     while True:
         try:
             number_text = read_text(prompt)

@@ -1,28 +1,63 @@
 """List of promotions functions"""
+import re
 import ioput as io
 from products_promotion import *
 
 
-def get_menu():
+PATTERN = r'([A-Z])'
+
+
+def get_template():
     """Return menu desing"""
     inner_menu = """{line}
-    {func}
-    {items}
-    {line}\n"""
+{title}
+{items}
+{line}"""
     return inner_menu
 
 
-def promotion_options(product: object) -> object:  # Promotion object
-    """It gets product.Product type instance"""
-    promotion_dict = {
-        1: PercentageDiscount
+def promotion_managment() -> object:  # Promotion object
+    """According the user choice create Promotion instance 
+    Instance's properties are provided by user
+    Returns:
+        object: Promotion type instance gets assigned to property of: product.promotion
+    """
+    promotion_options = {
+        1: PercentageDiscount,
+        2: SecondHalfPrice,
+        3: ThirdOneFree
     }
-    number_pro = io.read_int("Enter the promotion no: ")
-    if number_pro in promotion_dict:
+
+    promotion_map = map(lambda double: f"{double[0]}: {str(double[1].__name__)}", enumerate(
+        promotion_options.values(), start=1))
+    promotion_template = "\n".join(promotion_map)
+
+    promotion = io.read_int_ranged(
+        promotion_template + "\n\nEnter the promotion no: ",
+        min_value=1, max_value=len(promotion_options))
+    if promotion == 1:
         ratio = io.read_float("Discount percentange: ")
-        # Assigns only product instance price and quantity attributes to
-        # one of the product_promotion classes, avoid to change product properties
-        return promotion_dict[number_pro](product.price, product.quantity, ratio)
+        return promotion_options[promotion](ratio)
+    if promotion == 2:
+        step_for_half_price = 2
+        return promotion_options[promotion](step_for_half_price)
+    if promotion == 3:
+        step_to_free = 3
+        return promotion_options[promotion](step_to_free)
+
+
+def inner_menu_loop(shop, function, menu_title):
+    """This function is called add_promotion and remove production
+    STILL THINKING"""
+    inner_menu = get_template().format(
+        line="-"*9, title=menu_title, items=shop)
+    while True:
+        product_no = io.read_int_ranged(
+            f"{inner_menu}\nProvide product no: ", min_value=1, max_value=len(shop.stock))
+        # product variable is assigned products.Product object by user entry
+        product = shop.stock[product_no-1]
+        # promotion property gets its value as Promotion type
+        product.promotion = function()
 
 
 def add_promotion(shop: object):
@@ -30,11 +65,40 @@ def add_promotion(shop: object):
     User enters product no to add promotion to Product
     Chosen Product.promotion attributes invokes and  get assigen
     with Promotion instance"""
-    add_menu = get_menu().format(
-        line="-"*6, func="LIST OF SHOP PRODUCTS", items=shop)
-    product_no = io.read_int_ranged(
-        f"{add_menu}\nProvide product no: ", min_value=1, max_value=len(shop.stock))
-    # product assigned products.Product object
-    product = shop.stock[product_no-1]
-    product.promotion = promotion_options(product)
-    print(product.promotion.apply_promotion())
+    menu_title = "PROMOTION MANAGMENT"
+    add_menu = get_template().format(
+        line="*"*len(menu_title), title=menu_title, items=shop)
+    while True:
+        product_no = io.read_int_ranged(
+            f"{add_menu}\nSelect a promotion: ", min_value=1, max_value=len(shop.stock))
+        # product variable is assigned products.Product object by user entry
+        product = shop.stock[product_no-1]
+        # promotion property gets its value as Promotion type
+        product.promotion = promotion_managment()
+        if not io.ask_to_continue("Do you want to add another promotion y/n? "):
+            break
+
+
+def validate_user_answer():
+    """Returns list of lists, nested list first index is product index
+    nested list second index amount to buy
+    Ignores non integer base entries
+    """
+    questions = ["Which product # do you want? ", "What amount do you want? "]
+    basket = []
+    while True:
+        answers = []
+        for question in questions:
+            answer = input(question)
+            if answer.isnumeric():
+                answer = int(answer)
+            answers.append(answer)
+        # Eliminate non integer entry
+        is_any_not_int = any(not isinstance(item, int) for item in answers)
+        if is_any_not_int:
+            break
+        basket.append(answers)
+    return basket
+
+
+# def remove_promotion(shop: object):

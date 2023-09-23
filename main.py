@@ -21,9 +21,6 @@ def default_inventory() -> object:
     return test_store
 
 
-INNER_MENU_VIEW = get_menu()
-
-
 TEST_STORE = default_inventory()
 
 
@@ -32,38 +29,18 @@ TEST_STORE = default_inventory()
 
 def list_store_products(stored: object) -> None:
     """Use Store object __str__ method"""
-    inner_menu_view = INNER_MENU_VIEW.format(
-        line="-"*6, func="LIST OF STORE PRODUCTS", items=stored)
+    menu_title = "LIST OF STORE PRODUCTS"
+    inner_menu_view = get_template().format(
+        line="-"*len(menu_title), title=menu_title, items=stored)
     print(inner_menu_view)
 
 
 def total_amount_in_store(stored: object) -> None:
     """Total quantities of all products"""
+    menu_title = "TOTAL AMOUNT OF PRODUCTS"
     total_amount = sum(item.quantity for item in stored.stock)
-    total_view = f"{'-'*6}\nTOTAL AMOUNT OF PRODUCTS: {total_amount}\n{'-'*6}"
+    total_view = f"{'-'*len(menu_title)}\n{menu_title}: {total_amount}\n{'-'*len(menu_title)}"
     print(total_view)
-
-
-def validate_user_answer():
-    """Returns list of lists, nested list first index is product index
-    nested list second index amount to buy
-    Ignores non integer base entries
-    """
-    questions = ["Which product # do you want? ", "What amount do you want? "]
-    basket = []
-    while True:
-        answers = []
-        for question in questions:
-            answer = input(question)
-            if answer.isnumeric():
-                answer = int(answer)
-            answers.append(answer)
-        # Eliminate non integer entry
-        is_any_not_int = any(not isinstance(item, int) for item in answers)
-        if is_any_not_int:
-            break
-        basket.append(answers)
-    return basket
 
 
 def make_an_order(stored) -> None:
@@ -79,9 +56,10 @@ def make_an_order(stored) -> None:
     # enumerate index starts from 1, real index is 0
     availables_str = "\n".join(f"{count}. {item}" for count, item in enumerate(
         available_products_string_list, start=1))
-    make_order_view = INNER_MENU_VIEW.format(
-        line="-"*6, func="AVAILABLE PRODUCTS", items=availables_str)
-    print(make_order_view)
+    menu_title = "AVAILABLE PRODUCTS"
+    inner_menu_view = get_template().format(
+        line="$"*len(menu_title), title=menu_title, items=availables_str)
+    print(inner_menu_view)
     chosen_products = validate_user_answer()
     # list of lists, lists first value is index, second value quantity of request
     if chosen_products:
@@ -97,7 +75,7 @@ def make_an_order(stored) -> None:
                 print(
                     f"Error while making order! {clsmex}")
         if products_cost > 0:
-            print(f"Order made! Total payment: ${products_cost}")
+            print(f"\n{'='*18}\nORDER MADE, TOTAL: {product_cost}\n{'='*18}\n")
     else:
         print(
             "Neither the Store object is empty, nor did the user enter appropriate data.")
@@ -105,47 +83,45 @@ def make_an_order(stored) -> None:
 
 def remove_product_in_stock(test_store: object) -> bool:
     """Usage of Store.remove_product method"""
+    menu_title = "REMOVING - PRDOCUT"
     while test_store.stock:
-        list_str = INNER_MENU_VIEW.format(
-            line="-"*6, func="REMOVE PRODUCT IN STORE", items=test_store)
+        inner_menu_view = get_template().format(
+            line="X"*len(menu_title), title=menu_title, items=test_store)
         product_no = io.read_int_ranged(
-            f"{list_str}\nProvide product no: ", min_value=1, max_value=len(test_store.stock))
-
+            f"{inner_menu_view}\nProvide product no: ",
+            min_value=1, max_value=len(test_store.stock))
         try:
             product = test_store.stock[product_no-1]
             print(test_store.remove_product(product))
         except store.StoreExceptions as sexc:
             print(f"Error during the removal {sexc}")
-        if not io.ask_to_continue("Do you want to continue y/n? "):
+        if not io.ask_to_continue("DO YOU WANT TO REMOVE ANOTHER PRODUCT y/n? "):
             break
     print("\nLIST IS EMPTY")
 
 
 def add_new_product(test_store):
     """ADDING MENU"""
-    adding_menu = """
+    menu = "PLEASE CHOSE PRODUCT TYPE"
+    adding_menu = """\n\t{title}\n\t{line}
     1: "Product",
     2: "Products without quantity",
     3: "Limited Product"
-Please choice one of the options above: """
+Please choice one of the options above: """.format(line='+'*len(menu), title=menu)
     while True:
         adding_choice = io.read_int_ranged(
             adding_menu, min_value=1, max_value=3)
         try:
+            product_name = io.read_text("Provide product name: ")
+            product_price = io.read_float("Provide product price: ")
             if adding_choice == 1:
-                product_name = io.read_text("Provide product name: ")
-                product_price = io.read_float("Provide product price: ")
                 product_quantity = io.read_int("Provide product quantity: ")
                 new_product = products.Product(
                     product_name, product_price, product_quantity)
             elif adding_choice == 2:
-                product_name = io.read_text("Provide product name: ")
-                product_price = io.read_float("Provide product price: ")
                 new_product = products.QuantitativelessProducts(
                     product_name, product_price)
             elif adding_choice == 3:
-                product_name = io.read_text("Provide product name: ")
-                product_price = io.read_float("Provide product price: ")
                 product_quantity = io.read_int("Provide product quantity: ")
                 product_limitations = io.read_int(
                     "Provide product limitations: ")
@@ -156,16 +132,15 @@ Please choice one of the options above: """
             continue
         test_store.stock.append(new_product)
         print("New product added to Store Stock")
-        if not io.ask_to_continue("Do you want o add onother product: "):
+        if not io.ask_to_continue("DO YOU WANT TO ADD ANOTHER PRODUCT y/n: "):
             break
 
 
 def opening_scene(test_store):
     """Designs User Interface"""
-    menu_title = "Store Menu"
-    line = "-" * len(menu_title)
-    menu = f"""{menu_title}
-{line}
+    title = "OPERATION MENU"
+    line = "-"*len(title)
+    menu = f"""\t{title}\n\t{line}
 1. List all products in store
 2. Show total amount in store
 3. Add new product in store
@@ -175,7 +150,7 @@ def opening_scene(test_store):
 7. Show product details
 8. Make an order
 9. Quit
-Please provide operation number: """
+Please provide a operation number: """
     functions = {
         1: list_store_products,
         2: total_amount_in_store,
