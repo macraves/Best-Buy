@@ -2,7 +2,7 @@
 import store
 import products
 import ioput as io
-from functions import *
+import functions
 
 
 def default_inventory() -> object:
@@ -12,12 +12,13 @@ def default_inventory() -> object:
                                    price=250, quantity=500),
                   products.Product("Google Pixel 7",
                                    price=500, quantity=250),
+                  products.Product("samsung S10",
+                                   price=100, quantity=100),
+                  products.QuantitativelessProducts(
+                      name="microsoft licence", price=100),
+                  products.LimitedProducts("Ferrari", 100, 100, 2)
                   ]
     test_store = store.Store(items_list)
-    # Adding one more item
-    phone = products.Product("samsung S10",
-                             price=100, quantity=100)
-    test_store.add_product(phone)
     return test_store
 
 
@@ -30,7 +31,7 @@ TEST_STORE = default_inventory()
 def list_store_products(stored: object) -> None:
     """Use Store object __str__ method"""
     menu_title = "LIST OF STORE PRODUCTS"
-    inner_menu_view = get_template().format(
+    inner_menu_view = functions.get_template().format(
         line="-"*len(menu_title), title=menu_title, items=stored)
     print(inner_menu_view)
 
@@ -57,10 +58,10 @@ def make_an_order(stored) -> None:
     availables_str = "\n".join(f"{count}. {item}" for count, item in enumerate(
         available_products_string_list, start=1))
     menu_title = "AVAILABLE PRODUCTS"
-    inner_menu_view = get_template().format(
+    inner_menu_view = functions.get_template().format(
         line="$"*len(menu_title), title=menu_title, items=availables_str)
     print(inner_menu_view)
-    chosen_products = validate_user_answer()
+    chosen_products = functions.validate_user_answer()
     # list of lists, lists first value is index, second value quantity of request
     if chosen_products:
         for item in chosen_products:
@@ -85,7 +86,7 @@ def remove_product_in_stock(test_store: object) -> bool:
     """Usage of Store.remove_product method"""
     menu_title = "REMOVING - PRDOCUT"
     while test_store.stock:
-        inner_menu_view = get_template().format(
+        inner_menu_view = functions.get_template().format(
             line="X"*len(menu_title), title=menu_title, items=test_store)
         product_no = io.read_int_ranged(
             f"{inner_menu_view}\nProvide product no: ",
@@ -103,11 +104,13 @@ def remove_product_in_stock(test_store: object) -> bool:
 def add_new_product(test_store):
     """ADDING MENU"""
     menu = "PLEASE CHOSE PRODUCT TYPE"
-    adding_menu = """\n\t{title}\n\t{line}
+    adding_menu = f"""
+    \t{menu}
+    \t{'+' * len(menu)}
     1: "Product",
     2: "Products without quantity",
     3: "Limited Product"
-Please choice one of the options above: """.format(line='+'*len(menu), title=menu)
+    Please choose one of the options above: """
     while True:
         adding_choice = io.read_int_ranged(
             adding_menu, min_value=1, max_value=3)
@@ -149,22 +152,24 @@ def opening_scene(test_store):
 6. Remove promotion
 7. Show product details
 8. Make an order
-9. Quit
+9. Comperasion of  products
+10. Quit
 Please provide a operation number: """
-    functions = {
+    operations = {
         1: list_store_products,
         2: total_amount_in_store,
         3: add_new_product,
         4: remove_product_in_stock,
-        5: add_promotion,
-        6: remove_promotion,
-        7: show_product_details,
+        5: functions.add_promotion,
+        6: functions.remove_promotion,
+        7: functions.show_product_details,
         8: make_an_order,
-        9: "quit"
+        # 9: functions.instance_logic_methods,
+        10: "quit"
     }
     while True:
-        menu_choice = io.read_int_ranged(menu, min_value=1, max_value=9)
-        function = functions[menu_choice]
+        menu_choice = io.read_int_ranged(menu, min_value=1, max_value=10)
+        function = operations[menu_choice]
         if function == "quit":
             break
         function(test_store)

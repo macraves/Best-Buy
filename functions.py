@@ -2,6 +2,7 @@
 
 import ioput as io
 from products_promotion import PercentageDiscount, SecondHalfPrice, ThirdOneFree
+from store import test_remove_product
 
 
 class NoPromitionValue(Exception):
@@ -156,3 +157,13 @@ def validate_user_answer():
             break
         basket.append(answers)
     return basket
+
+
+def instance_logic_methods(shop):
+    """Comparasin, sorting"""
+    max_price = max(product.price for product in shop.stock)
+    print(max_price)
+
+
+# dukkan = test_remove_product()
+# instance_logic_methods(dukkan)

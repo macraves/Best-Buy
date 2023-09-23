@@ -63,14 +63,17 @@ def test_remove_product():
                              price=100, quantity=100)
     store = Store(product_list=items_list)
     store.add_product(phone)
+    active_products = store.get_all_products()
+    for product in active_products:
+        print(product)
 
-    phone.buy(100)
-    # print(phone.is_active())
-    # print(f"{store.get_total_quantity()}")
-    print(f"ALL PRODUCTS\n{store}")
-    print(f"ACTIVE PRODUCTS\n{store.get_all_products()}")
-    store.remove_product(phone)
-    print(f"{phone.name} removed from stock, Updated whole list\n{store}")
+    # phone.buy(100)
+    # # print(phone.is_active())
+    # # print(f"{store.get_total_quantity()}")
+    # print(f"ALL PRODUCTS\n{store}")
+    # print(f"ACTIVE PRODUCTS\n{store.get_all_products()}")
+    # store.remove_product(phone)
+    # print(f"{phone.name} removed from stock, Updated whole list\n{store}")
 
 
 if __name__ == "__main__":

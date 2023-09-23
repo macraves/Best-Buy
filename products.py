@@ -73,10 +73,10 @@ class Product:
 
     def __str__(self) -> str:
         """Product object string representation"""
-        properties = [self.name, self.price, self.quantity]
+        attributes = [self.name, self.price, self.quantity]
         instance_template = ", ".join(f"{item}" if item is not None
                                       else f"\n\t{item}" if item is not None else ""
-                                      for item in properties)
+                                      for item in attributes)
         if self.promotion is not None:
             instance_template += f"\n\t{self.promotion}"
         return instance_template
@@ -140,7 +140,7 @@ class QuantitativelessProducts(Product):
     def quantity(self, value):
         if value != 1:
             raise ClassMethodException(
-                f"{self.name}`s quantity cannot be andy digit rather than 1 ")
+                f"{self.name}`s quantity cannot be any digit rather than 1 ")
 
     def set_quantity(self, quantity) -> None:
         if isinstance(quantity, int):
@@ -152,7 +152,9 @@ class QuantitativelessProducts(Product):
         if quantity != 1:
             raise ClassMethodException(
                 f"{self.name} Attempt to any number rather than 1")
-        return super().buy(1)
+        if self.promotion is not None:
+            return self.promotion.apply_promotion(self.price, quantity)
+        return self.price
     # Overide instance attribute "active"
 
     @property
@@ -181,30 +183,38 @@ class LimitedProducts(Product):
     def __init__(self, name: str, price: float, quantity: int, count) -> None:
         super().__init__(name, price, quantity)
         # Use a different name for the instance variable
-        self._allowed_purchase_count = count
-        self.purchased_number = 0
+        self.allowed_ship_count = count
+        self.shipped_so_far = 0
 
     @property
-    def allowed_purchase_count(self):
+    def allowed_ship_count(self):
         """Getter Method"""
-        return self._allowed_purchase_count
+        return self._allowed_ship_count
 
-    @allowed_purchase_count.setter
-    def allowed_purchase_count(self, quantity):
+    @allowed_ship_count.setter
+    def allowed_ship_count(self, quantity):
         if not isinstance(quantity, int):
             raise ClassMethodException("Invalid purchase quantity")
         if quantity > self.quantity:
             raise ClassMethodException("There is not enough quantity")
-        self._allowed_purchase_count = quantity
+        self._allowed_ship_count = quantity
 
     def buy(self, quantity):
         """Checks instance purchase count by its own allowed count
         if purchase get greater value than instance attribute it prints message
         and it will not execute last order but it returns 0"""
         if Product.validate_buyer_quantity(quantity):
-            if self.allowed_purchase_count == self.purchased_number:
-                print(
-                    f"{self.name} product, cannot be ordered more than {self.allowed_purchase_count}")
-                return 0
-            self.purchased_number += 1
-            return super().buy(quantity)
+            if self.shipped_so_far == self.allowed_ship_count:
+                raise ClassMethodException(
+                    f"{self.name} Product, cannot be ordered more than {self.allowed_ship_count} times")
+            if self.promotion is not None:
+                self.shipped_so_far += 1
+                self.quantity -= quantity
+                return self.promotion.apply_promotion(self.price, quantity)
+            self.shipped_so_far += 1
+            self.quantity -= quantity
+            return self.price * quantity
+
+    def __str__(self) -> str:
+        inherited_str = super().__str__()
+        return f"{inherited_str} max ship: {self.allowed_ship_count}"

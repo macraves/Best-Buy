@@ -39,7 +39,7 @@ class PercentageDiscount(Promation):
         return round(amount_to_pay, 2)
 
     def __str__(self):
-        template = f"Promotion: PercentageDiscount has {self.discount_percentange}% discount"
+        template = f"Promotion: PercentageDiscount is {self.discount_percentange}% discount"
         return template
 
 
@@ -62,7 +62,7 @@ class SecondHalfPrice(Promation):
         return total_amount
 
     def __str__(self):
-        template = "Promotion: SecondHalfPrice, Buy two, the second one is half price"
+        template = "Promotion: SecondHalfPrice"
         return template
 
 
@@ -80,7 +80,7 @@ class ThirdOneFree(Promation):
         return total_amount
 
     def __str__(self):
-        template = "Promotion: ThirdOneFree, Buy 3, the third one is free"
+        template = "Promotion: ThirdOneFree"
         return template
 
 # item = PercentageDiscount(price=100, quantity=1, discount_raito=10)
