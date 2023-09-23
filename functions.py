@@ -162,8 +162,21 @@ def validate_user_answer():
 def instance_logic_methods(shop):
     """Comparasin, sorting"""
     max_price = max(product.price for product in shop.stock)
-    print(max_price)
+    min_price = min(product.price for product in shop.stock)
+    print("max price: ", max_price, " min price: ", min_price)
+    high_price_to_lowest = sorted(
+        shop.stock, key=lambda item: item.price, reverse=True)
+    hig_low_text = "\n".join(
+        f"{i}.{item}" for i, item in enumerate(high_price_to_lowest, start=1))
+    # TypeError: '<' not supported between instances of 'Product' and 'Product'
+    # lowest_to_highest = sorted(high_price_to_lowest) """Aborted"""
+    lowest_to_highest = sorted(shop.stock, key=lambda x: x.price)
+    low_to_high_text = "\n".join(
+        f"{i}.{x}" for i, x in enumerate(lowest_to_highest, start=1))
+    print(hig_low_text)
+    print(low_to_high_text)
+    menu = get_template()
 
 
-# dukkan = test_remove_product()
-# instance_logic_methods(dukkan)
+dukkan = test_remove_product()
+instance_logic_methods(dukkan)
