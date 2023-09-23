@@ -1,10 +1,14 @@
 """List of promotions functions"""
 
 import ioput as io
-from products_promotion import *
+from products_promotion import PercentageDiscount, SecondHalfPrice, ThirdOneFree
 
 
-PATTERN = r'([A-Z])'
+class NoPromitionValue(Exception):
+    """To stop Inner loop"""
+
+    def __init__(self, message) -> None:
+        super().__init__(message)
 
 
 def get_template():
@@ -22,6 +26,7 @@ def promotion_managment(chosen_product) -> object:  # Promotion object
     Returns:
         object: Promotion type instance gets assigned to property of: product.promotion
     """
+
     if chosen_product.promotion is None:
         promotion_options = {
             1: PercentageDiscount,
@@ -58,28 +63,63 @@ def promotion_managment(chosen_product) -> object:  # Promotion object
             return chosen_product.promotion
 
 
+def remove_management(product):
+    """to not change all convention"""
+    if product.promotion is None:
+        raise NoPromitionValue(
+            "The product does not have any promotion to remove")
+    product.promotion = None
+
+    return product.promotion
+
+
+def product_list_iner_loop(shop: object, function, menu_title, action):
+    """That will execute function method as user requested"""
+    while True:
+        add_menu = get_template().format(
+            line="*"*len(menu_title), title=menu_title, items=shop)
+        product_no = io.read_int_ranged(
+            f"{add_menu}\nSelect a product to {action} a promotion: ",
+            min_value=1, max_value=len(shop.stock))
+        # product variable is assigned products.Product object by user entry
+        product = shop.stock[product_no-1]
+        # promotion property gets its value as Promotion type
+        try:
+            product.promotion = function(product)
+        except NoPromitionValue as npv:
+            print(f"{npv}".upper())
+            break
+        if not io.ask_to_continue(f"Do you want to {action} another promotion y/n? "):
+            break
+
+
 def add_promotion(shop: object):
     """Opens up menu to display product list of store
     User enters product no to add promotion to Product
     Chosen Product.promotion attributes invokes and  get assigen
     with Promotion instance"""
     menu_title = "PROMOTION MANAGMENT"
-    while True:
-        add_menu = get_template().format(
-            line="*"*len(menu_title), title=menu_title, items=shop)
-        product_no = io.read_int_ranged(
-            f"{add_menu}\nSelect product to get promoted: ", min_value=1, max_value=len(shop.stock))
-        # product variable is assigned products.Product object by user entry
-        product = shop.stock[product_no-1]
-        # promotion property gets its value as Promotion type
-        product.promotion = promotion_managment(product)
-        if not io.ask_to_continue("Do you want to add another promotion y/n? "):
-            break
+    action_name = "ADD"
+    product_list_iner_loop(shop, promotion_managment, menu_title, action_name)
+    # while True:
+    #     add_menu = get_template().format(
+    #         line="*"*len(menu_title), title=menu_title, items=shop)
+    #     product_no = io.read_int_ranged(
+    #         f"{add_menu}\nSelect product to get promoted: ", min_value=1, max_value=len(shop.stock))
+    #     # product variable is assigned products.Product object by user entry
+    #     product = shop.stock[product_no-1]
+    #     # promotion property gets its value as Promotion type
+    #     product.promotion = promotion_managment(product)
+    #     if not io.ask_to_continue("Do you want to add another promotion y/n? "):
+    #         break
 
 
 def remove_promotion(shop: object) -> None:
     """This method has been already in promotion managment
     as the project ask for this method add promotion inner loop will be another method"""
+    action_name = "REMOVE"
+    remove_title = "REMOVE PROMOTION"
+    product_list_iner_loop(shop, remove_management, remove_title, action_name)
 
 
 def validate_user_answer():
