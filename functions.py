@@ -102,17 +102,6 @@ def add_promotion(shop: object):
     menu_title = "PROMOTION MANAGMENT"
     action_name = "ADD"
     product_list_iner_loop(shop, promotion_managment, menu_title, action_name)
-    # while True:
-    #     add_menu = get_template().format(
-    #         line="*"*len(menu_title), title=menu_title, items=shop)
-    #     product_no = io.read_int_ranged(
-    #         f"{add_menu}\nSelect product to get promoted: ", min_value=1, max_value=len(shop.stock))
-    #     # product variable is assigned products.Product object by user entry
-    #     product = shop.stock[product_no-1]
-    #     # promotion property gets its value as Promotion type
-    #     product.promotion = promotion_managment(product)
-    #     if not io.ask_to_continue("Do you want to add another promotion y/n? "):
-    #         break
 
 
 def show_product_details(shop):
@@ -159,11 +148,28 @@ def validate_user_answer():
     return basket
 
 
+def comparison_of_products(shop):
+    "PPRICE COMPARSION"
+    func_title = "PPRICE COMPARSION"
+    items_menu = get_template()
+    all_products_str = "\n".join(
+        f"{i}.{product}" for i, product in enumerate(shop.stock, start=1))
+    items_menu.format(line="*"*len(func_title),
+                      title=func_title, items=all_products_str)
+    first_product = io.read_int_ranged(all_products_str +
+                                       "\nChose your first product: ", min_value=1, max_value=len(shop.stock))
+    second_product = io.read_int_ranged(
+        "Chose your second product: ", min_value=1, max_value=len(shop.stock))
+    products = [shop.stock[first_product-1].price,
+                shop.stock[second_product-1].price]
+
+    return f"Expensive product is: {max(products)}\nCheapest product is {min(products)}"
+
+
 def instance_logic_methods(shop):
     """Comparasin, sorting"""
     max_price = max(product.price for product in shop.stock)
     min_price = min(product.price for product in shop.stock)
-    print("max price: ", max_price, " min price: ", min_price)
     high_price_to_lowest = sorted(
         shop.stock, key=lambda item: item.price, reverse=True)
     hig_low_text = "\n".join(
@@ -173,10 +179,30 @@ def instance_logic_methods(shop):
     lowest_to_highest = sorted(shop.stock, key=lambda x: x.price)
     low_to_high_text = "\n".join(
         f"{i}.{x}" for i, x in enumerate(lowest_to_highest, start=1))
-    print(hig_low_text)
-    print(low_to_high_text)
-    menu = get_template()
+    # print(hig_low_text)
+    # print(low_to_high_text)
+    user_menu = {
 
-
-dukkan = test_remove_product()
-instance_logic_methods(dukkan)
+        1: "Max price in the stock",
+        2: "Min price in the stock",
+        3: "Sort highest to lowest",
+        4: "Sort lowest to highest",
+        5: "Compare two product price"
+    }
+    user_menu_str = "\n".join(
+        map(lambda x: f"{x[0]}: {str(x[1])}", user_menu.items()))
+    while True:
+        command = io.read_int_ranged(
+            user_menu_str+"\nWhat is your command: ", min_value=1, max_value=len(user_menu))
+        if command == 1:
+            print(max_price)
+        elif command == 2:
+            print(min_price)
+        elif command == 3:
+            print(hig_low_text)
+        elif command == 4:
+            print(low_to_high_text)
+        elif command == 5:
+            print(comparison_of_products(shop))
+        if io.ask_to_continue("To continue press any button but stop 'y'..."):
+            break

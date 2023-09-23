@@ -164,7 +164,7 @@ Please provide a operation number: """
         6: functions.remove_promotion,
         7: functions.show_product_details,
         8: make_an_order,
-        # 9: functions.instance_logic_methods,
+        9: functions.instance_logic_methods,
         10: "quit"
     }
     while True:
