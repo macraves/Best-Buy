@@ -114,6 +114,20 @@ def add_promotion(shop: object):
     #         break
 
 
+def show_product_details(shop):
+    """iterate through in shop.stock list to find the product by name"""
+    search_result = None
+    product_name = io.read_text("Please enter the product name: ")
+    product_name = product_name.strip().title()
+    for product in shop.stock:
+        if product_name in product.name:
+            search_result = product
+    if search_result is not None:
+        print(f"\nFound Product according your entry:\n{search_result}\n")
+    else:
+        print(f"\n{product_name} is not found in the stock\n")
+
+
 def remove_promotion(shop: object) -> None:
     """This method has been already in promotion managment
     as the project ask for this method add promotion inner loop will be another method"""

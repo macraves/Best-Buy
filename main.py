@@ -158,7 +158,7 @@ Please provide a operation number: """
         4: remove_product_in_stock,
         5: add_promotion,
         6: remove_promotion,
-        7: "show_product_details",
+        7: show_product_details,
         8: make_an_order,
         9: "quit"
     }
