@@ -73,8 +73,11 @@ class Product:
 
     def __str__(self) -> str:
         """Product object string representation"""
-        template = f"{self.name}, Price: ${self.price}, Quantity: {self.quantity}"
-        return template
+        properties = [str(self.name), str(self.price), str(
+            self.quantity), str(self.promotion)]
+        instance_template = ", ".join(
+            instance for instance in properties if properties)
+        return instance_template
 
     def set_promotion(self, promotion):
         """Product instance promotion attributes is assigned to 

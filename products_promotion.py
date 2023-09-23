@@ -38,6 +38,10 @@ class PercentageDiscount(Promation):
         amount_to_pay = quantity * new_price
         return round(amount_to_pay, 2)
 
+    def __str__(self):
+        template = f"Promotion: PercentageDiscount has {self.discount_percentange}% discount"
+        return template
+
 
 class SecondHalfPrice(Promation):
     """Construction of class has a parameter that can be modifed
@@ -57,6 +61,10 @@ class SecondHalfPrice(Promation):
         total_amount = half_price_amount + whole_price_amount
         return total_amount
 
+    def __str__(self):
+        template = "Promotion: SecondHalfPrice, Buy two, the second one is half price"
+        return template
+
 
 class ThirdOneFree(Promation):
     """One in the every trio is free similar the previous class
@@ -70,6 +78,10 @@ class ThirdOneFree(Promation):
         priceable_product_count = quantity - free_product_count + quantity % self.steps
         total_amount = priceable_product_count * price
         return total_amount
+
+    def __str__(self):
+        template = "Promotion: ThirdOneFree, Buy 3, the third one is free"
+        return template
 
 # item = PercentageDiscount(price=100, quantity=1, discount_raito=10)
 # print(item.apply_promotion())

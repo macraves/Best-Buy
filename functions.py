@@ -70,7 +70,7 @@ def add_promotion(shop: object):
         line="*"*len(menu_title), title=menu_title, items=shop)
     while True:
         product_no = io.read_int_ranged(
-            f"{add_menu}\nSelect a promotion: ", min_value=1, max_value=len(shop.stock))
+            f"{add_menu}\nSelect product to get promoted: ", min_value=1, max_value=len(shop.stock))
         # product variable is assigned products.Product object by user entry
         product = shop.stock[product_no-1]
         # promotion property gets its value as Promotion type
