@@ -99,11 +99,11 @@ class TestProducts(unittest.TestCase):
 
     def test_lp_allowed_number_methods(self):
         """Test the allowed purchase count getter and setter"""
-        self.assertEqual(self.product3.allowed_purchase_count, 2)
+        self.assertEqual(self.product3.allowed_ship_count, 2)
         # Raise Exception situations:
         with self.assertRaises(clsex):
-            self.product3.allowed_purchase_count = None
-            self.product3.allowed_purchase_count = ""
+            self.product3.allowed_ship_count = None
+            self.product3.allowed_ship_count = ""
 
     def test_lp_buy_methods(self):
         """Test LP buy method"""
@@ -114,7 +114,8 @@ class TestProducts(unittest.TestCase):
         # Test if test_product can be executed 3 times
         total_amount = test_product.buy(1)
         total_amount += test_product.buy(1)
-        total_amount += test_product.buy(1)
+        with self.assertRaises(clsex):
+            total_amount += test_product.buy(1)
 
         self.assertTrue(total_amount, 20)
 
