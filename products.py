@@ -73,11 +73,12 @@ class Product:
 
     def __str__(self) -> str:
         """Product object string representation"""
-        properties = [str(self.name), str(self.price), str(
-            self.quantity), str(self.promotion)]
-        instance_template = ", ".join(
-            instance for instance in properties if properties)
+        properties = [self.name, self.price, self.quantity, self.promotion]
+        instance_template = ", ".join(f"{item}" if item is not None
+                                      else f"\n\t{item}" if item is not None else ""
+                                      for item in properties)
         return instance_template
+# and not isinstance(item, bool)
 
     def set_promotion(self, promotion):
         """Product instance promotion attributes is assigned to 
